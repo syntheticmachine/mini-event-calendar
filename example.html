@@ -6,150 +6,13 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<link rel="stylesheet" href="src/mini-calendar.css">
 
-	<!-- Demo Styles -->
-	<style>
-		html, body{
-			margin: 0;
-			padding: 0;
-		}
-		/* Just an excuse to use CSS Grid 😊 */
-		#wrapper{
-			padding: 40px;
-		}
-
-		[id^=calendar],
-		[id^=calendar] + h3{
-			width: 400px;
-		}
-
-		[id^=calendar] + h3{
-			text-align: center;
-		}
-
-		@media only screen and (max-width: 500px){
-			#wrapper{
-				padding: 1em;
-				display: block;
-			}
-			[id^=calendar],
-			[id^=calendar] + h3{
-				width: 100%;
-				max-width: 400px;
-				margin: 1em auto;
-			}
-
-			[id^=calendar] + h3{
-				display: block;
-				margin-bottom: 2em;
-			}
-		}
-
-		#calTFooter #eventTitle {
-			margin: 0;
-			margin-right: 0.1em;
-			font-weight: 400;
-			font-size: .95em;
-			white-space: initial;
-			overflow: visible;
-			text-overflow: initial;
-		}
-		#calTFooter #calLink {
-			flex-shrink: 0;
-			text-decoration: none;
-			color: #fff;
-			background: #1d4ed8;
-			display: block;
-			text-align: center;
-			padding: 12px;
-			letter-spacing: 2px;
-			margin-top: 16px;
-			font-size: 14px;
-		}
-		#calTFooter {
-			background: #ffffff;
-			border-top: 1px solid rgba(0,0,0,.05);
-			padding: 16px;
-			color: #212121;
-			font-size: 17px;
-			line-height: 1.4;
-			display: block;
-		}
-		.mini-cal {
-			padding-bottom: 0;
-			background: #f8fafc;
-			color: #0f172a;
-			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-			margin: 0 auto;
-		}
-		#calTitle {
-			padding-bottom: 16px;
-		}
-		#calTbody .a-date>span {
-			display: block;
-			font-size: 1em;
-			color: #334155;
-		}
-		#calTbody .a-date.focused>span {
-			color: white;
-		}
-		#calTbody .a-date.event:before {
-			background-color: #1d4ed8;
-		}
-		#calTbody .a-date.current {
-    	border-color: #e9f0f9;
-		}
-		#calTitle button {
-			transition: all .3s ease;
-			background: rgba(0,0,0,.2);
-			cursor: pointer;
-		}
-		#calTitle button:hover {
-    	background: #1d4ed8;
-		}
-		#calTbody .a-date.focused, #calTbody .a-date:active {
-    	background: #1c4ed8;
-		}
-		#calTbody .a-date.event:before {
-			transition: all .3s ease;
-		}
-		.event {
-			background: #e9f0f9 !important;
-		}
-		.event.focused {
-			transition: all .3s ease;
-    	padding-top: 20px !important;
-    	padding-bottom: 8px !important;
-			background: #1c4ed8 !important;
-		}
-		.event.focused::before {
-			background-color: white !important;
-			top: 9px !important;
-		}
-		#calTbody, #calThead {
-			padding: 0;
-		}
-		#calTbody .a-date.event:before {
-			content: '';
-			position: absolute;
-			top: 0.2em;
-			right: 0;
-			left: 0;
-			margin: auto;
-			border-radius: 50%;
-			width: 5px;
-			height: 5px;
-		}
-		#calTitle {
-			padding-bottom: 16px;
-			border-bottom: 1px solid rgba(0,0,0,.05);
-			background: white;
-		}
-	</style>
 	<div id="wrapper">
 
 		<div>
 			<div id="calendar"></div>
 		</div>
+
+	</div>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="src/mini-calendar.js"></script>
@@ -161,14 +24,14 @@
 
 	    var events = [
 				{
-						title: "Let us see how much information we can actually put in this thing. It might not work the best, but it also might.",
+						title: "This is the main event, fill this in with content.",
 						date: mainEvent,
-						link: "#"
+						link: "https://sample.com/"
 				},
 				{
-						title: "Let us see how much information we can actually put in this thing. It might not work the best, but it also might.",
+						title: "This is the second sample event, replace both of these with real ones.",
 						date: secondEvent,
-						link: "#"
+						link: "https://sample.com/"
 				},
 	    ];
 
@@ -180,5 +43,6 @@
 
 		});
 	</script>
+
 </body>
 </html>
