@@ -1,228 +1,110 @@
-(function( $ ) {
-	var calenderTpl = `
-		<div id="calTitle">
-			<button type="button" class="month-mover prev">
-				<svg fill="#FFFFFF" height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg">
-					<path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-				</svg>
-			</button>
-			<div id="monthYear"></div>
-			<button type="button" class="month-mover next">
-				<svg fill="#FFFFFF" height="30" viewBox="0 0 24 24" width="30" xmlns="http://www.w3.org/2000/svg">
-					<path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
-				</svg>
-			</button>
-		</div>
-		<div>
-			<div id="calThead"></div>
-			<div id="calTbody"></div>
-		</div>
-		<div id="calTFooter">
-			<h3 id="eventTitle">No events today.</h3>
-			<a href="javascript:void(0);" id="calLink"></a>
-		</div>
-	`;
-	var weekDaysFromSunday = '<div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>';
-	var weekDaysFromMonday = '<div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>';
-	var shortMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
+jQuery(document).ready(function($) {
+	
+	// Create The Calendar
+	$('.calendar').html(
+		'<div class="calendar__container">'
+		+'<div class="calendar__main">'
+		+'<div class="calendar__header">'
+		+'<span class="calendar__header-title"></span>'
+		+'</div>'
+		+'<div class="calendar__inner">'
+		+'<div class="grid calendar__inner-numbers"></div>'
+		+'</div>'
+		+'</div>'
+		+'<div class="calendar__slide">'
+		+'<span class="calendar__slide-close">×</span>'
+		+'<div class="calendar__slide-content"></div>'
+		+'</div>'
+		+'</div>'
+	);
+	
+	// Set The Month
+	const monthName = new Date().toLocaleString("default", { month: "long" });
+	$('.calendar__header-title').html(monthName);
+	
+	// Get Number Of Days
+	switch (monthName) {
+		case 'January':
+			days = 31;
+			break;
+		case 'February':
+			days = 28;
+			break;
+		case 'March':
+			days = 31;
+			break;
+		case 'April':
+			days = 30;
+			break;
+		case 'May':
+			days = 31;
+			break;
+		case 'June':
+			days = 30;
+			break;
+		case 'July':
+			days = 31;
+		case 'August':
+			days = 31;
+		case 'September':
+			days = 30;
+		case 'October':
+			days = 31;
+		case 'November':
+			days = 30;
+		case 'December':
+			days = 31;
+	}
+	
+	// Add Extra Day For Loop
+	days = days + 1;
+	
+	// Add Days To Calendar
+	for (let i = 1; i < days; i++) {
+		$('.calendar__inner-numbers').append('<div data-day='+i+'>'+i+'</div>');
+	}
+	
+	// Add Extra Days For February
+	if(monthName == 'February') {
+		$('.calendar__inner-numbers').append('<div class="disabled-date">29</div>');
+		$('.calendar__inner-numbers').append('<div class="disabled-date">30</div>');
+		$('.calendar__inner-numbers').append('<div class="disabled-date">31</div>');
+	}
+	
+	// Add Extra Days For Other Months
+	if(monthName == 'April' || monthName == 'June'|| monthName == 'September'|| monthName == 'November') {
+		$('.calendar__inner-numbers').append('<div class="disabled-date">31</div>');
+	}
+	
+	// Loop Through Events
+	$( ".events .event" ).each(function() {
+		let dateSelector = $(this).data('day');
+		$('.calendar__inner-numbers div[data-day="'+dateSelector+'"]').addClass('active-date');
+	});
+	
+	// Single Date Click Event
+	$('.calendar__inner-numbers div.active-date').each(function() {
 
-    $.fn.miniEventCalendar = $.fn.MEC = function(options) {
-    	var settings = $.extend({
-			calendar_link : "",
-    		events: [],
-			from_monday: false,
-			onMonthChanged: null
-        }, options );
+		$(this).click(function() {
 
-		var miniCalendar = this;
+			// Get Date Selected
+			let clickedDate = $(this).data('day');
+			let dateData = $('.event[data-day="'+clickedDate+'"]').html();
 
-    miniCalendar.addClass('mini-cal').html(calenderTpl);
+			// Add Data To Date
+			$('.calendar__slide-content').html(dateData);
 
-		var thead = miniCalendar.find("#calThead");
-		var tbody = miniCalendar.find("#calTbody");
-		var calTitle = miniCalendar.find("#monthYear");
-		var calFooter = miniCalendar.find("#calTFooter");
-  	var eventTitle = miniCalendar.find("#eventTitle");
-		var eventsLink = miniCalendar.find("#calLink");
+			// Open And Close Slide Container
+			$('.calendar__slide').addClass('open-slide');
 
-		var today = new Date();
-		var curMonth = today.getMonth();
-		var curYear = today.getFullYear();
-
-    eventTitle.text("No events today.");
-		eventsLink.text("ALL EVENTS");
-		eventsLink.attr("href", settings.calendar_link);
-
-		if(settings.from_monday)
-			thead.html(weekDaysFromMonday);
-		else
-			thead.html(weekDaysFromSunday);
-
-		if(!settings.calendar_link.length && !settings.events.length)
-			calFooter.css("display", "none");
-
-		miniCalendar.find(".month-mover").each(function(){
-			var mover = $(this);
-			mover.bind("click", function(e){
-				e.preventDefault();
-				if(mover.hasClass("next"))
-					viewNextMonth();
-				else
-					viewPrevMonth();
-			});
 		});
-
-		miniCalendar.on("click touchstart", ".a-date", function(e){
-			e.preventDefault(); 
-			$(".a-date").removeClass('focused');
-		    if(!$(this).hasClass('blurred')){
-				showEvent($(this).data('event'));
-				$(this).focus();
-				$(this).addClass('focused');
-			}
-		});
-
-		function populateCalendar(month, year, onInit) {
-			tbody.html("");
-			calTitle.text(shortMonths[month] + " " + year);
-			eventTitle.text("Click day to see event");
-			eventsLink.text("All Events");
-			eventsLink.attr("href", "#");
-
-
-			curMonth = month;
-			curYear = year;
-
-			var ldate = new Date(year, month);
-			var dt = new Date(ldate);
-			var weekDay = dt.getDay();
-
-			if(settings.from_monday)
-				weekDay = dt.getDay() > 0 ? dt.getDay() - 1 : 6;
-
-			if(ldate.getDate() === 1)
-				tbody.append(lastDaysOfPrevMonth(weekDay));
-
-			while (ldate.getMonth() === month) {
-     			dt = new Date(ldate);
-
-     			var isToday = areSameDate(ldate, new Date());
-     			var event = null;
-     			var eventIndex = settings.events.findIndex(function(ev) {
-		     		return areSameDate(dt, new Date(ev.date));
-		     	});
-
-		        if(eventIndex != -1){
-		        	event = settings.events[eventIndex];
-
-		        	if(onInit && isToday)
-		        		showEvent(event);
-		        }
-
-     			tbody.append(dateTpl(false, ldate.getDate(), isToday, event, onInit && isToday));
-
-     			ldate.setDate(ldate.getDate() + 1);
-
-     			var bufferDays = 43 - miniCalendar.find(".a-date").length;
-
-		        if(ldate.getMonth() != month){
-		        	for(var i = 1; i < bufferDays; i++){
-						tbody.append(dateTpl(true, i));
-					}
-				}
-			}
-			 
-			if(settings.onMonthChanged){
-				settings.onMonthChanged(month, year);
-			}
- 		}
-
- 		function lastDaysOfPrevMonth(day){
- 			if(curMonth > 0){
-				var monthIdx = curMonth - 1;
-				var yearIdx = curYear;
-			}
-			else{
-     			if(curMonth < 11){
-     				var monthIdx = 0;
-     				var yearIdx = curYear + 1;
-     			}else{
-     				var monthIdx = 11;
-     				var yearIdx = curYear - 1;
-     			}
-     		}
-     		
-     		var prevMonth = getMonthDays(monthIdx, yearIdx);
-     		var lastDays = "";
-        	for (var i = day; i > 0; i--)
-     			lastDays += dateTpl(true, prevMonth[prevMonth.length - i]);
-
-        	return lastDays;
- 		}
-
-		function dateTpl(blurred, date, isToday, event, isSelected){
-			var tpl = "<div class='a-date blurred'><span>"+date+"</span></div>";
-
-			if(!blurred){
-				var hasEvent = event && event !== null;
-		        var cls = isToday ? "current " : "";
-		        cls += hasEvent && isSelected ? "focused " : "";
-		        cls += hasEvent ? "event " : "";
-		        
-		        var tpl ="<button type='button' class='a-date "+cls+"' data-event='"+JSON.stringify(event)+"'><span>"+date+"</span></button>";
-			}
-
-			return tpl;
-		}
-
-		function showEvent(event){
-
-			if(event && event !== null && event !== undefined){
-				eventsLink.show();
-				eventTitle.text(event.title);
-				eventsLink.text("VIEW EVENT");
-				eventsLink.attr("href", event.link);
-			}else{
-				eventTitle.text("No events on this day.");
-				eventsLink.text("ALL EVENTS");
-				eventsLink.attr("href", settings.calendar_link);
-				eventsLink.hide();
-			}
-		}
-
-		function viewNextMonth(){
-			var nextMonth = curMonth < 11 ? curMonth + 1 : 0;
-			var nextYear = curMonth < 11 ? curYear : curYear + 1;
-
-			populateCalendar(nextMonth, nextYear);
-		}
-
-		function viewPrevMonth(){
-			var prevMonth = curMonth > 0 ? curMonth - 1 : 11;
-			var prevYear = curMonth > 0 ? curYear : curYear - 1;
-			
-			populateCalendar(prevMonth, prevYear);
-		}
-
-		function areSameDate(d1, d2) {
-			return d1.getFullYear() == d2.getFullYear()
-		        && d1.getMonth() == d2.getMonth()
-		        && d1.getDate() == d2.getDate();
-		}
-
-		function getMonthDays(month, year) {
-			var date = new Date(year, month, 1);
-			var days = [];
-			while (date.getMonth() === month) {
-				days.push(date.getDate());
-				date.setDate(date.getDate() + 1);
-			}
-			return days;
-		}
-
-		populateCalendar(curMonth, curYear, true);
-
-        return miniCalendar;
-    };
- 
-}( jQuery ));
+		
+	});
+	
+	// Close Slide Container
+	$('.calendar__slide-close').click(function(e) {
+		e.preventDefault();
+		$('.calendar__slide').removeClass('open-slide');
+	})
+	
+});
